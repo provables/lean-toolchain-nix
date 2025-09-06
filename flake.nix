@@ -24,6 +24,16 @@
                 "4.21.0" = "sha256-soZSrh2J/8J4697B0dJJ7muEKL9yq+V9mpIw5mPf1jA=";
                 "4.22.0" = "sha256-6YRd5hY5lafGrPGZx2oZSWhSJHSxWzBvJoBwmyTyL9M=";
               };
+              x86_64-darwin = {
+                "4.20.1" = "";
+                "4.21.0" = "";
+                "4.22.0" = "";
+              };
+              x86_64-linux = {
+                "4.20.1" = "";
+                "4.21.0" = "";
+                "4.22.0" = "";
+              };
             };
             toolchainDownload =
               pkgs.stdenv.mkDerivation {
