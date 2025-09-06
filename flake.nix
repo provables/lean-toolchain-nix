@@ -10,16 +10,17 @@
         pkgs = nixpkgs.legacyPackages.${system};
         shell = shell-utils.myShell.${system};
 
-        leanVersion = "4.22.0";
-
         toolchain =
+          leanVersion:
           let
             hashes = {
               aarch64-darwin = {
+                "4.20.1" = "sha256-Ay/RV+ZsQ5blPv4fnzBHgDHhAhodISHrigaG1wUQHIg=";
                 "4.21.0" = "sha256-clPmvzmNchv3wODsTVCzgHmO7LBEXMctWc7cwGbo7Z0=";
                 "4.22.0" = "sha256-9YL5VKjMfK3kpGiMPlYPjdx+Rm3hr62q4lEgDaxdwaM=";
               };
               aarch64-linux = {
+                "4.20.1" = "sha256-PgvfYGmO+nWqwAWNcipxtGCXX08gGI3eSfEsBcZJWCg=";
                 "4.21.0" = "sha256-soZSrh2J/8J4697B0dJJ7muEKL9yq+V9mpIw5mPf1jA=";
                 "4.22.0" = "sha256-6YRd5hY5lafGrPGZx2oZSWhSJHSxWzBvJoBwmyTyL9M=";
               };
@@ -79,17 +80,28 @@
               ln -s leanprover--lean4---v${leanVersion}/* .
             '';
           };
-      in
-      {
-        packages.default = toolchain;
-
-        devShell = shell {
+        leanDevShell = leanVersion: shell {
           name = "lean-toolchain-${leanVersion}";
           buildInputs = with pkgs; [
+            (toolchain leanVersion)
             elan
-            toolchain
             go-task
           ] ++ lib.optional stdenv.isDarwin apple-sdk_14;
+        };
+      in
+      {
+        packages = {
+          lean-toolchain-4_20 = toolchain "4.20.1";
+          lean-toolchain-4_21 = toolchain "4.21.0";
+          lean-toolchain-4_22 = toolchain "4.22.0";
+          default = toolchain "4.22.0";
+        };
+
+        devShells = {
+          lean-4_20 = leanDevShell "4.20.1";
+          lean-4_21 = leanDevShell "4.21.0";
+          lean-4_22 = leanDevShell "4.22.0";
+          default = leanDevShell "4.22.0";
         };
       }
     );
