@@ -25,7 +25,7 @@
                 "4.22.0" = "sha256-6YRd5hY5lafGrPGZx2oZSWhSJHSxWzBvJoBwmyTyL9M=";
               };
               x86_64-darwin = {
-                "4.20.1" = "";
+                "4.20.1" = "sha256-Qlk1qljI2QVnbYCFVtV7DQf0oGCuzkdboKMJegOWRtA=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
