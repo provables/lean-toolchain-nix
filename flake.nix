@@ -98,11 +98,27 @@
             go-task
           ] ++ lib.optional stdenv.isDarwin apple-sdk_14;
         };
+        gitRecording = pkgs.writeShellApplication {
+          name = "git";
+          runtimeInputs = [ pkgs.git pkgs.jq ];
+          text = ''
+            mkdir -p "$GITLOG"
+            [ ! -s "$GITLOG/contents.json" ] && echo "{}" > "$GITLOG/contents.json"
+            P="$(realpath "$(pwd)")"
+            A="$*"
+            OUT=$(mktemp -p "$GITLOG")
+            git "$@" > "$OUT" 2>&1
+            PREV=$(cat "$GITLOG/contents.json")
+            echo "$PREV" | jq --arg P "'$P'" --arg A "'$A'" --arg OUT "'$OUT'" \
+              '."\($P)"."\($A)" = $OUT' > "$GITLOG/contents.json"
+            cat "$OUT"
+          '';
+        };
         mathlib = leanVersion:
           let
             hashes = {
               aarch64-darwin = {
-                "4.20.1" = "sha256-Bok3lictsT3gsNsV2sSnqb9UYWxPa+R+UI25U1UXt/0=";
+                "4.20.1" = "sha256-LTDhWs/ab6lg48Y+W2zizghLDEU75esepVfNsQE0q4o=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
@@ -134,7 +150,7 @@
               lean
               rsync
               curl
-              git
+              gitRecording
               coreutils
               moreutils
               ripgrep
@@ -151,32 +167,13 @@
                 --subst-var-by leanVersion "${leanVersion}"
               mkdir -p $out
               export HOME=$(mktemp -d)
+              export GITLOG=$(mktemp)
               git config --global user.name "No Name"
               git config --global user.email "<no@email.org>"
               lake exe cache get
-              cd .lake/packages
-              # Remove all git hooks
-              echo "----- Removing hooks"
-              find . -regex '.*\.git/hooks\($\|/.*\)' -delete
-              # Remove local data from git refs
-              echo "----- Cleaning up refs"
-              for f in $(find . -path "*.git/logs/*" -type f); do
-                sed -E -i -e 's/[^[:space:]]+/0000000000/6' "$f"
-              done
-              # Clear trace files from local info
-              echo "----- Cleaning up traces"
-              for f in $(find . -path "*.lake*.trace" -type f); do
-                jq '.log[]?.message = ""' "$f" | sponge "$f"
-                jq '.inputs = []' "$f" | sponge "$f"
-              done
-              # rg 'nix/store' .lake/packages || true
-              # tar zcf $out/foo.tgz .
-              # TODO: remove .git/hooks
-              # TODO: zero out the date and emails in .git/logs
-              # TODO: zero out paths in trace files
-              rsync -av . $out
-              # rsync -av --include="*/" --include="*.olean" --exclude="*" \
-              #   .lake/packages/ $out
+              cp $GITLOG $out
+              # cd .lake/packages
+              # rsync -a . $out
             '';
           };
         test = pkgs.fetchgit {
@@ -257,7 +254,7 @@
           lean-toolchain-4_22 = toolchain "4.22.0";
           default = toolchain "4.22.0";
           mathlib-4_20 = mathlib "4.20.1";
-          inherit test mathlibRepos;
+          inherit test mathlibRepos gitRecording;
         };
 
         devShells = {
