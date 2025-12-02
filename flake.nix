@@ -104,14 +104,18 @@
           text = ''
             mkdir -p "$GITLOG"
             [ ! -s "$GITLOG/contents.json" ] && echo "{}" > "$GITLOG/contents.json"
-            P="$(realpath "$(pwd)")"
+            P="$(realpath --relative-to="$BASE" "$(pwd)")"
             A="$*"
-            OUT=$(mktemp -p "$GITLOG")
-            git "$@" > "$OUT" 2>&1
+            OUT=$(md5 -s "$P|$A")
+            STATUS=0
+            O=$(git "$@" 2>&1) || STATUS="$?"
+            echo "$O" > "$GITLOG/$OUT"
             PREV=$(cat "$GITLOG/contents.json")
-            echo "$PREV" | jq --arg P "'$P'" --arg A "'$A'" --arg OUT "'$OUT'" \
-              '."\($P)"."\($A)" = $OUT' > "$GITLOG/contents.json"
-            cat "$OUT"
+            echo "$PREV" | \
+              jq --arg P "$P" --arg A "$A" --arg OUT "$OUT" --arg S "$STATUS" \
+              '."\($P)"."\($A)" = {"out": $OUT, "status": $S}' > "$GITLOG/contents.json"
+            cat "$GITLOG/$OUT"
+            exit "$STATUS"
           '';
         };
         mathlib = leanVersion:
