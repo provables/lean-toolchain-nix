@@ -100,17 +100,21 @@
         };
         gitRecording = pkgs.writeShellApplication {
           name = "git";
-          runtimeInputs = [ pkgs.git pkgs.jq ];
+          runtimeInputs = with pkgs; [
+            git
+            jq
+            gnused
+          ];
           text = ''
             GITLOG=$(realpath "$GITLOG")
             mkdir -p "$GITLOG"
             [ ! -s "$GITLOG/contents.json" ] && echo "{}" > "$GITLOG/contents.json"
-            P="$(realpath --relative-to="$BASE" "$(pwd)")"
-            A="$*"
+            P="$(realpath --relative-to="$GITBASE" "$(pwd)")"
+            A="''${*//$GITBASE/GITBASE}"
             OUT=$(echo -n "$P|$A" | md5sum | cut -f1 -d' ')
             STATUS=0
             O=$(git "$@" 2>&1) || STATUS="$?"
-            echo "$O" > "$GITLOG/$OUT"
+            echo "''${O//$GITBASE/GITBASE}" > "$GITLOG/$OUT"
             PREV=$(cat "$GITLOG/contents.json")
             echo "$PREV" | \
               jq --arg P "$P" --arg A "$A" --arg OUT "$OUT" --arg S "$STATUS" \
@@ -123,7 +127,7 @@
           let
             hashes = {
               aarch64-darwin = {
-                "4.20.1" = "sha256-i8BCP246HYD1QEHG5DrEfzy9wbzedfO/y24pdz3JlmY=";
+                "4.20.1" = "sha256-M7I8sJhjAN0rB6g9QeEb7zfoC18COhjT27yYnubRXcU=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
@@ -173,7 +177,7 @@
               mkdir -p $out
               export HOME=$(mktemp -d)
               export GITLOG=$(pwd)/gitlog
-              export BASE=$(pwd)
+              export GITBASE=$(pwd)
               git config --global user.name "No Name"
               git config --global user.email "<no@email.org>"
               lake exe cache get
