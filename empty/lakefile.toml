@@ -1,0 +1,12 @@
+name = "goo"
+version = "0.1.0"
+keywords = ["math"]
+defaultTargets = ["Empty"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v@leanVersion@"
+
+[[lean_lib]]
+name = "Empty"
