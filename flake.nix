@@ -228,6 +228,24 @@
               mv $GITLOG $out/.gitlog
             '';
           };
+        buildLeanPackage =
+          { leanVersion ? "4.20.1"
+          , buildInputs ? [ ]
+          , ...
+          }@params:
+          let
+            _mathlib = mathlib leanVersion;
+            _lean = toolchain leanVersion;
+          in
+          pkgs.stdenv.mkDerivation (params // {
+            buildInputs = buildInputs ++ [ gitReplaying _lean ];
+            patchPhase = ''
+              mkdir -p .lake/packages
+              for f in `ls ${_mathlib}/`; do ln -s ${_mathlib}/$f .lake/packages/$f; done
+              export GITLOG="${_mathlib}/.gitlog"
+              export GITBASE="$(pwd)"
+            '';
+          });
         test =
           let
             mathlib420 = mathlib "4.20.1";
@@ -240,11 +258,22 @@
               gitReplaying
               lean
             ];
-            buildPhase = ''
+            patchPhase = ''
               mkdir -p .lake/packages
               for f in `ls ${mathlib420}/`; do ln -s ${mathlib420}/$f .lake/packages/$f; done
               export GITLOG="${mathlib420}/.gitlog"
               export GITBASE="$(pwd)"
+            '';
+            buildPhase = ''
+              lake build
+              mkdir -p $out
+              cp .lake/build/lib/lean/Foo.olean $out
+            '';
+          };
+          test2 = buildLeanPackage {
+            name = "test2";
+            src = ./test/foo;
+            buildPhase = ''
               lake build
               mkdir -p $out
               cp .lake/build/lib/lean/Foo.olean $out
@@ -258,7 +287,7 @@
           lean-toolchain-4_22 = toolchain "4.22.0";
           default = toolchain "4.22.0";
           mathlib-4_20 = mathlib "4.20.1";
-          inherit test gitRecording gitReplaying;
+          inherit test test2 gitRecording gitReplaying;
         };
 
         devShells = {
