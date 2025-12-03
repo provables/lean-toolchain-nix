@@ -228,14 +228,28 @@
               mv $GITLOG $out/.gitlog
             '';
           };
-        test = pkgs.stdenv.mkDerivation {
-          name = "test";
-          src = ./test;
-          buildPhase = ''
-
-
-          '';
-        };
+        test =
+          let
+            mathlib420 = mathlib "4.20.1";
+            lean = toolchain "4.20.1";
+          in
+          pkgs.stdenv.mkDerivation {
+            name = "test";
+            src = ./test/foo;
+            buildInputs = [
+              gitReplaying
+              lean
+            ];
+            buildPhase = ''
+              mkdir -p .lake/packages
+              for f in `ls ${mathlib420}/`; do ln -s ${mathlib420}/$f .lake/packages/$f; done
+              export GITLOG="${mathlib420}/.gitlog"
+              export GITBASE="$(pwd)"
+              lake build
+              mkdir -p $out
+              cp .lake/build/lib/lean/Foo.olean $out
+            '';
+          };
       in
       {
         packages = {
