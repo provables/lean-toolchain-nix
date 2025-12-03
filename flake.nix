@@ -127,7 +127,7 @@
           let
             hashes = {
               aarch64-darwin = {
-                "4.20.1" = "sha256-M7I8sJhjAN0rB6g9QeEb7zfoC18COhjT27yYnubRXcU=";
+                "4.20.1" = "sha256-n/gIdwXXJxo3BTrKdEP/1dFaIc8JFHQq3+dC7bWZd7g=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
@@ -178,13 +178,15 @@
               export HOME=$(mktemp -d)
               export GITLOG=$(pwd)/gitlog
               export GITBASE=$(pwd)
-              git config --global user.name "No Name"
-              git config --global user.email "<no@email.org>"
               lake exe cache get
-              lake build
-              mv $GITLOG $out
-              # cd .lake/packages
-              # rsync -a . $out
+              find .lake/packages -name .git -type d | xargs rm -rf
+              echo "----- Cleaning up traces"
+              for f in $(find .lake/packages -path "*.lake*.trace" -type f); do
+                jq '.log[]?.message = ""' "$f" | sponge "$f"
+                jq '.inputs = []' "$f" | sponge "$f"
+              done
+              rsync -a .lake/packages/ $out
+              mv $GITLOG $out/.gitlog
             '';
           };
         test = pkgs.fetchgit {
