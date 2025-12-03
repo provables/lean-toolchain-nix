@@ -107,19 +107,22 @@
             coreutils
           ];
           text = ''
-            GITLOG=$(realpath "$GITLOG")
+            GITLOG=$(realpath -s "$GITLOG")
             mkdir -p "$GITLOG"
             [ ! -s "$GITLOG/contents.json" ] && echo "{}" > "$GITLOG/contents.json"
-            P="$(realpath --relative-to="$GITBASE" "$(pwd)")"
+            REPO="$(basename "$( (git rev-parse --show-toplevel || echo -n) 2>/dev/null)")"
+            P="$(realpath -s --relative-to="$GITBASE" "$(pwd)")"
             A="''${*//$GITBASE/GITBASE}"
             OUT=$(echo -n "$P|$A" | md5sum | cut -f1 -d' ')
             STATUS=0
             O=$(git "$@" 2>&1) || STATUS="$?"
-            echo "''${O//$GITBASE/GITBASE}" > "$GITLOG/$OUT"
+            echo -n "''${O//$GITBASE/GITBASE}" > "$GITLOG/$OUT"
             PREV=$(cat "$GITLOG/contents.json")
             echo "$PREV" | \
               jq --arg P "$P" --arg A "$A" --arg OUT "$OUT" --arg S "$STATUS" \
-              '."\($P)"."\($A)" = {"out": $OUT, "status": $S}' > "$GITLOG/contents.json"
+                --arg R "$REPO" \
+              '.byPath."\($P)"."\($A)" = {"out": $OUT, "status": $S} | .byRepo."\($R)"."\($A)" = {"out": $OUT, "status": $S}' \
+              > "$GITLOG/contents.json"
             cat "$GITLOG/$OUT"
             exit "$STATUS"
           '';
@@ -135,9 +138,15 @@
           text = ''
             test -n "$GITLOG"
             test -n "$GITBASE"
-            P="$(realpath --relative-to="$GITBASE" "$(pwd)")"
+            if [ -d ".git" ]; then
+              REPO="$(basename "$(pwd)")"
+            else
+              REPO=""
+            fi
+            P="$(realpath -s --relative-to="$GITBASE" "$(pwd)")"
             A="''${*//$GITBASE/GITBASE}"
-            CONTENT=$(jq -r --arg P "$P" --arg A "$A" '."\($P)"."\($A)"' \
+            CONTENT=$(jq -r --arg P "$P" --arg A "$A" --arg R "$REPO" \
+              '.byRepo."\($R)"."\($A)"' \
               "$GITLOG/contents.json")
             if [ "$CONTENT" = "null" ]; then
               git "$@"
@@ -153,7 +162,7 @@
           let
             hashes = {
               aarch64-darwin = {
-                "4.20.1" = "sha256-n/gIdwXXJxo3BTrKdEP/1dFaIc8JFHQq3+dC7bWZd7g=";
+                "4.20.1" = "sha256-pnKdWU9VipNZ2ZJVGtDg1gMMghxKex74I2Jh8LGNHRg=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
@@ -205,7 +214,11 @@
               export GITLOG=$(pwd)/gitlog
               export GITBASE=$(pwd)
               lake exe cache get
-              find .lake/packages -name .git -type d | xargs rm -rf
+              lake build
+              for f in $(find .lake/packages -name .git -type d); do
+                rm -rf $f
+                mkdir -p $f
+              done
               echo "----- Cleaning up traces"
               for f in $(find .lake/packages -path "*.lake*.trace" -type f); do
                 jq '.log[]?.message = ""' "$f" | sponge "$f"
@@ -215,76 +228,14 @@
               mv $GITLOG $out/.gitlog
             '';
           };
-        test = pkgs.fetchgit {
+        test = pkgs.stdenv.mkDerivation {
           name = "test";
-          url = "https://github.com/waltermoreira/nginx-test.git";
-          leaveDotGit = true;
-          rev = "104f8596ad7d13305ce8d4cd894d4f9a59bc0aea";
-          hash = "sha256-EEG/6zfF9PsZ4cF/72Thnp6AwMoAGDp6PlYgLC0HQRA=";
+          src = ./test;
+          buildPhase = ''
+
+
+          '';
         };
-        mathlibHashes = {
-          aesop = {
-            rev = "ddfca7829bf8aa4083cdf9633935dddbb28b7b2a";
-            hash = "sha256-4j2VuLmlGCmscGpb6hrDwBFUwjBOtUchGSzCQGpSQv8=";
-            url = "https://github.com/leanprover-community/aesop";
-          };
-          batteries = {
-            rev = "7a0d63fbf8fd350e891868a06d9927efa545ac1e";
-            hash = "sha256-LyiG6rc9kNn8K0/2mDaD8RtOsTwK9vYQHiffNXNi/VU=";
-            url = "https://github.com/leanprover-community/batteries";
-          };
-          Cli = {
-            rev = "f9e25dcbed001489c53bceeb1f1d50bbaf7451d4";
-            hash = "sha256-6VZQ4v4bTCuDy0JZNIM0ckw4b5gyHvQmhT/4Keoq0xE=";
-            url = "https://github.com/leanprover/lean4-cli";
-          };
-          importGraph = {
-            rev = "a11bcb5238149ae5d8a0aa5e2f8eddf8a3a9b27d";
-            hash = "sha256-tOMps125FAUTZxZyzPt3VVQpg3f5IPjabTYq8JLcr3o=";
-            url = "https://github.com/leanprover-community/import-graph";
-          };
-          LeanSearchClient = {
-            rev = "6c62474116f525d2814f0157bb468bf3a4f9f120";
-            hash = "sha256-HLw4aMWH5UHqhbmc42fi7/jxlSEcqs0oE99ANjwfmog=";
-            url = "https://github.com/leanprover-community/LeanSearchClient";
-          };
-          mathlib = {
-            rev = "5c0c94b3f563ed756b48b9439788c53b0d56a897";
-            hash = "sha256-joY0g+ZXhRP6buFL3X/37qMtZ7ep6N/e3p3VTLdYTtY=";
-            url = "https://github.com/leanprover-community/mathlib4";
-          };
-          plausible = {
-            rev = "2ac43674e92a695e96caac19f4002b25434636da";
-            hash = "sha256-5NY4ewpgno+O28xvhHbB2jjX45uvQtisSd8zQx0hR58=";
-            url = "https://github.com/leanprover-community/plausible";
-          };
-          proofwidgets = {
-            rev = "21e6a0522cd2ae6cf88e9da99a1dd010408ab306";
-            hash = "sha256-lGCDKbVSh0W/MLFW9k5WrQP/pk5lDP2dwOI25x9La24=";
-            url = "https://github.com/leanprover-community/ProofWidgets4";
-          };
-          Qq = {
-            rev = "2865ea099ab1dd8d6fc93381d77a4ac87a85527a";
-            hash = "sha256-hIdwZC0HGNeyRs9KPszvLAUZcRTuza8OGITxMtt9//w=";
-            url = "https://github.com/leanprover-community/quote4";
-          };
-        };
-        mathlibRepos = pkgs.linkFarm "mathlibRepos" (
-          builtins.attrValues
-            (builtins.mapAttrs
-              (name: value: {
-                inherit name;
-                path = pkgs.fetchgit {
-                  inherit name;
-                  url = value.url;
-                  leaveDotGit = true;
-                  rev = value.rev;
-                  hash = value.hash;
-                };
-              })
-              mathlibHashes
-            ) 
-        );
       in
       {
         packages = {
@@ -293,7 +244,7 @@
           lean-toolchain-4_22 = toolchain "4.22.0";
           default = toolchain "4.22.0";
           mathlib-4_20 = mathlib "4.20.1";
-          inherit test mathlibRepos gitRecording gitReplaying;
+          inherit test gitRecording gitReplaying;
         };
 
         devShells = {
