@@ -104,6 +104,7 @@
             git
             jq
             gnused
+            coreutils
           ];
           text = ''
             GITLOG=$(realpath "$GITLOG")
@@ -121,6 +122,31 @@
               '."\($P)"."\($A)" = {"out": $OUT, "status": $S}' > "$GITLOG/contents.json"
             cat "$GITLOG/$OUT"
             exit "$STATUS"
+          '';
+        };
+        gitReplaying = pkgs.writeShellApplication {
+          name = "git";
+          runtimeInputs = with pkgs; [
+            git
+            jq
+            gnused
+            coreutils
+          ];
+          text = ''
+            test -n "$GITLOG"
+            test -n "$GITBASE"
+            P="$(realpath --relative-to="$GITBASE" "$(pwd)")"
+            A="''${*//$GITBASE/GITBASE}"
+            CONTENT=$(jq -r --arg P "$P" --arg A "$A" '."\($P)"."\($A)"' \
+              "$GITLOG/contents.json")
+            if [ "$CONTENT" = "null" ]; then
+              git "$@"
+            else
+              FILETOPLAY=$(echo "$CONTENT" | jq -r '.out' )
+              STATUS=$(echo "$CONTENT" | jq -r '.status' )
+              sed "s|GITBASE|$GITBASE|g" < "$GITLOG/$FILETOPLAY" 
+              exit "$STATUS"
+            fi
           '';
         };
         mathlib = leanVersion:
@@ -257,7 +283,7 @@
                 };
               })
               mathlibHashes
-            )
+            ) 
         );
       in
       {
@@ -267,7 +293,7 @@
           lean-toolchain-4_22 = toolchain "4.22.0";
           default = toolchain "4.22.0";
           mathlib-4_20 = mathlib "4.20.1";
-          inherit test mathlibRepos gitRecording;
+          inherit test mathlibRepos gitRecording gitReplaying;
         };
 
         devShells = {
