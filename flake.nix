@@ -96,6 +96,7 @@
             (toolchain leanVersion)
             elan
             go-task
+            git
           ] ++ lib.optional stdenv.isDarwin apple-sdk_14;
         };
         gitRecording = pkgs.writeShellApplication {
@@ -115,7 +116,7 @@
             A="''${*//$GITBASE/GITBASE}"
             OUT=$(echo -n "$P|$A" | md5sum | cut -f1 -d' ')
             STATUS=0
-            O=$(git "$@" 2>&1) || STATUS="$?"
+            O=$(git "$@" 2>&1 | tee) || STATUS="$?"
             echo -n "''${O//$GITBASE/GITBASE}" > "$GITLOG/$OUT"
             PREV=$(cat "$GITLOG/contents.json")
             echo "$PREV" | \
@@ -162,7 +163,7 @@
           let
             hashes = {
               aarch64-darwin = {
-                "4.20.1" = "sha256-pnKdWU9VipNZ2ZJVGtDg1gMMghxKex74I2Jh8LGNHRg=";
+                "4.20.1" = "sha256-FKRtXZmT12ikXDBUD21HxnwGPVYuYG3CMwfiYrxL1vk=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
@@ -177,7 +178,7 @@
                 "4.22.0" = "";
               };
               x86_64-linux = {
-                "4.20.1" = "";
+                "4.20.1" = "sha256-lEnHqW9awz/ts6Op9kqXvbjb6pkaAP/C9HR0xr0RZEE=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
@@ -219,13 +220,14 @@
                 rm -rf $f
                 mkdir -p $f
               done
+              rm -rf .lake/packages/mathlib/.lake/build/bin
               echo "----- Cleaning up traces"
               for f in $(find .lake/packages -path "*.lake*.trace" -type f); do
                 jq '.log[]?.message = ""' "$f" | sponge "$f"
                 jq '.inputs = []' "$f" | sponge "$f"
               done
               rsync -a .lake/packages/ $out
-              mv $GITLOG $out/.gitlog
+              cp -r $GITLOG $out/.gitlog
             '';
           };
         buildLeanPackage =
