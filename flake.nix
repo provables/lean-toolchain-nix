@@ -116,7 +116,7 @@
             A="''${*//$GITBASE/GITBASE}"
             OUT=$(echo -n "$P|$A" | md5sum | cut -f1 -d' ')
             STATUS=0
-            O=$(git "$@" 2>&1 | tee) || STATUS="$?"
+            O=$(GIT_PROGRESS_DELAY=1000000 git "$@" 2>&1 | tee) || STATUS="$?"
             echo -n "''${O//$GITBASE/GITBASE}" > "$GITLOG/$OUT"
             PREV=$(cat "$GITLOG/contents.json")
             echo "$PREV" | \
@@ -168,12 +168,12 @@
                 "4.22.0" = "";
               };
               aarch64-linux = {
-                "4.20.1" = "";
+                "4.20.1" = "sha256-KeoatagdO9XE7Muddx44ePz6ZXea9HEeLncDwmJrW3M=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
               x86_64-darwin = {
-                "4.20.1" = "";
+                "4.20.1" = "sha256-ZvsII70usPaC6ID2Em+Eyohlis0xU5NSgwjlKkymwtY=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
