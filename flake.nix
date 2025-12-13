@@ -163,22 +163,22 @@
           let
             hashes = {
               aarch64-darwin = {
-                "4.20.1" = "sha256-FKRtXZmT12ikXDBUD21HxnwGPVYuYG3CMwfiYrxL1vk=";
+                "4.20.1" = "sha256-29g4R9Hp14UlMAk9Lx+tMYGGqk3jfZ/8nr3f8N1AIeA=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
               aarch64-linux = {
-                "4.20.1" = "sha256-KeoatagdO9XE7Muddx44ePz6ZXea9HEeLncDwmJrW3M=";
+                "4.20.1" = "";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
               x86_64-darwin = {
-                "4.20.1" = "sha256-ZvsII70usPaC6ID2Em+Eyohlis0xU5NSgwjlKkymwtY=";
+                "4.20.1" = "";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
               x86_64-linux = {
-                "4.20.1" = "sha256-lEnHqW9awz/ts6Op9kqXvbjb6pkaAP/C9HR0xr0RZEE=";
+                "4.20.1" = "";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
