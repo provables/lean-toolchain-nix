@@ -291,7 +291,9 @@
           mathlib-4_20 = mathlib "4.20.1";
           inherit test test2 gitRecording gitReplaying;
         };
-
+        lib = {
+          inherit buildLeanPackage;
+        };
         devShells = {
           lean-4_20 = leanDevShell "4.20.1";
           lean-4_21 = leanDevShell "4.21.0";
