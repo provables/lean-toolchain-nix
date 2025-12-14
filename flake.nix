@@ -163,7 +163,7 @@
           let
             hashes = {
               aarch64-darwin = {
-                "4.20.1" = "sha256-29g4R9Hp14UlMAk9Lx+tMYGGqk3jfZ/8nr3f8N1AIeA=";
+                "4.20.1" = "sha256-ViH1H9i8DvXOrgAr12uxb+W8g3uG6BokyvQ52j+GsFg=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
