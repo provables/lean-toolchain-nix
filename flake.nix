@@ -243,6 +243,7 @@
         buildLeanPackage =
           { leanVersion ? "4.20.1"
           , buildInputs ? [ ]
+          , writable ? [ ]
           , ...
           }@params:
           let
@@ -250,10 +251,14 @@
             _lean = toolchain leanVersion;
           in
           pkgs.stdenv.mkDerivation (params // {
-            buildInputs = buildInputs ++ [ gitReplaying _lean ];
+            buildInputs = buildInputs ++ [ pkgs.rsync gitReplaying _lean ];
             patchPhase = ''
               mkdir -p .lake/packages
               for f in `ls ${_mathlib}/`; do ln -s ${_mathlib}/$f .lake/packages/$f; done
+              for p in ${builtins.toString writable}; do
+                rm -rf .lake/packages/$p
+                rsync -a --chmod=0777 ${_mathlib}/$p .lake/packages
+              done
               export GITLOG="${_mathlib}/.gitlog"
               export GITBASE="$(pwd)"
             '';
@@ -285,7 +290,10 @@
         test2 = buildLeanPackage {
           name = "test2";
           src = ./test/foo;
+          writable = [ "Cli" ];
           buildPhase = ''
+            ls -l .lake/packages
+            touch .lake/packages/Cli/foo
             lake build
             mkdir -p $out
             cp .lake/build/lib/lean/Foo.olean $out
