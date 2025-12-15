@@ -161,6 +161,12 @@
         };
         mathlib = leanVersion:
           let
+            versions = {
+              "4.20.1" = {
+                cliVersion = "4.20.0";
+                checkdeclsVersion = "lean4.18.0";
+              };
+            };
             hashes = {
               aarch64-darwin = {
                 "4.20.1" = "sha256-L9uYmQxIg4q8Vq4CcAV+VP0ySAUuYjKDDh/s+M5f7O0=";
@@ -184,6 +190,8 @@
               };
             };
             lean = toolchain leanVersion;
+            cliVersion = versions.${leanVersion}.cliVersion;
+            checkdeclsVersion = versions.${leanVersion}.checkdeclsVersion;
           in
           pkgs.stdenv.mkDerivation {
             name = "mathlib-${leanVersion}";
@@ -209,7 +217,9 @@
             phases = [ "unpackPhase" "buildPhase" ];
             buildPhase = ''
               substituteInPlace lakefile.toml lean-toolchain \
-                --subst-var-by leanVersion "${leanVersion}"
+                --subst-var-by leanVersion "${leanVersion}" \
+                --subst-var-by cliVersion "${cliVersion}" \
+                --subst-var-by checkdeclsVersion "${checkdeclsVersion}"
               mkdir -p $out
               export HOME=$(mktemp -d)
               export GITLOG=$(pwd)/gitlog
@@ -272,15 +282,15 @@
               cp .lake/build/lib/lean/Foo.olean $out
             '';
           };
-          test2 = buildLeanPackage {
-            name = "test2";
-            src = ./test/foo;
-            buildPhase = ''
-              lake build
-              mkdir -p $out
-              cp .lake/build/lib/lean/Foo.olean $out
-            '';
-          };
+        test2 = buildLeanPackage {
+          name = "test2";
+          src = ./test/foo;
+          buildPhase = ''
+            lake build
+            mkdir -p $out
+            cp .lake/build/lib/lean/Foo.olean $out
+          '';
+        };
       in
       {
         packages = {
