@@ -184,7 +184,7 @@
                 "4.22.0" = "";
               };
               x86_64-linux = {
-                "4.20.1" = "";
+                "4.20.1" = "sha256-htydXQd30riiTc4ZKd+aDHMLMZ4LSEj9cywwgY4GHNw=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
