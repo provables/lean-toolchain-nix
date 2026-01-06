@@ -165,11 +165,12 @@
               "4.20.1" = {
                 cliVersion = "4.20.0";
                 checkdeclsVersion = "lean4.18.0";
+                lean4checkerVersion = "4.20.1";
               };
             };
             hashes = {
               aarch64-darwin = {
-                "4.20.1" = "sha256-L9uYmQxIg4q8Vq4CcAV+VP0ySAUuYjKDDh/s+M5f7O0=";
+                "4.20.1" = "sha256-2zIdNVoP/gL0tjpsytumZH8nPCBBVlrF7GDGLcW8+Xs=";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
@@ -184,7 +185,7 @@
                 "4.22.0" = "";
               };
               x86_64-linux = {
-                "4.20.1" = "sha256-htydXQd30riiTc4ZKd+aDHMLMZ4LSEj9cywwgY4GHNw=";
+                "4.20.1" = "";
                 "4.21.0" = "";
                 "4.22.0" = "";
               };
@@ -192,6 +193,7 @@
             lean = toolchain leanVersion;
             cliVersion = versions.${leanVersion}.cliVersion;
             checkdeclsVersion = versions.${leanVersion}.checkdeclsVersion;
+            lean4checkerVersion = versions.${leanVersion}.lean4checkerVersion;
           in
           pkgs.stdenv.mkDerivation {
             name = "mathlib-${leanVersion}";
@@ -219,13 +221,15 @@
               substituteInPlace lakefile.toml lean-toolchain \
                 --subst-var-by leanVersion "${leanVersion}" \
                 --subst-var-by cliVersion "${cliVersion}" \
-                --subst-var-by checkdeclsVersion "${checkdeclsVersion}"
+                --subst-var-by checkdeclsVersion "${checkdeclsVersion}" \
+                --subst-var-by lean4checkerVersion "${lean4checkerVersion}"
               mkdir -p $out
               export HOME=$(mktemp -d)
               export GITLOG=$(pwd)/gitlog
               export GITBASE=$(pwd)
               lake exe cache get
               lake build
+              lake build lean4checker
               for f in $(find .lake/packages -name .git -type d); do
                 rm -rf $f
                 mkdir -p $f

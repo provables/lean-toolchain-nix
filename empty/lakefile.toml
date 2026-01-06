@@ -23,5 +23,10 @@ name = "checkdecls"
 git = "https://github.com/PatrickMassot/checkdecls.git"
 rev = "@checkdeclsVersion@"
 
+[[require]]
+name = "lean4checker"
+git = "https://github.com/leanprover/lean4checker"
+rev = "v@lean4checkerVersion@"
+
 [[lean_lib]]
 name = "Empty"
