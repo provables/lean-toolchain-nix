@@ -18,21 +18,25 @@
                 "4.20.1" = "sha256-Ay/RV+ZsQ5blPv4fnzBHgDHhAhodISHrigaG1wUQHIg=";
                 "4.21.0" = "sha256-clPmvzmNchv3wODsTVCzgHmO7LBEXMctWc7cwGbo7Z0=";
                 "4.22.0" = "sha256-9YL5VKjMfK3kpGiMPlYPjdx+Rm3hr62q4lEgDaxdwaM=";
+                "4.27.0" = "sha256-6asv9emVklmz0xD6zy3NKF+l6PPRDMnnHxcs247Zdng=";
               };
               aarch64-linux = {
                 "4.20.1" = "sha256-PgvfYGmO+nWqwAWNcipxtGCXX08gGI3eSfEsBcZJWCg=";
                 "4.21.0" = "sha256-soZSrh2J/8J4697B0dJJ7muEKL9yq+V9mpIw5mPf1jA=";
                 "4.22.0" = "sha256-6YRd5hY5lafGrPGZx2oZSWhSJHSxWzBvJoBwmyTyL9M=";
+                "4.27.0" = "";
               };
               x86_64-darwin = {
                 "4.20.1" = "sha256-Qlk1qljI2QVnbYCFVtV7DQf0oGCuzkdboKMJegOWRtA=";
                 "4.21.0" = "";
                 "4.22.0" = "";
+                "4.27.0" = "";
               };
               x86_64-linux = {
                 "4.20.1" = "sha256-EDlz49ECpEAYHdkihEOa5hVU27lP9g4vyNN7bfixHXw=";
                 "4.21.0" = "";
                 "4.22.0" = "";
+                "4.27.0" = "";
               };
             };
             toolchainDownload =
@@ -167,27 +171,36 @@
                 checkdeclsVersion = "lean4.18.0";
                 lean4checkerVersion = "4.20.1";
               };
+              "4.27.0" = {
+                cliVersion = "4.27.0";
+                checkdeclsVersion = "lean4.18.0";
+                lean4checkerVersion = "4.27.0";
+              };
             };
             hashes = {
               aarch64-darwin = {
                 "4.20.1" = "sha256-2zIdNVoP/gL0tjpsytumZH8nPCBBVlrF7GDGLcW8+Xs=";
                 "4.21.0" = "";
                 "4.22.0" = "";
+                "4.27.0" = "sha256-09Bt8QRsVEKxcOUnJZpe1kZ4ux2m1g0ydVVrGxl+OQY=";
               };
               aarch64-linux = {
                 "4.20.1" = "";
                 "4.21.0" = "";
                 "4.22.0" = "";
+                "4.27.0" = "";
               };
               x86_64-darwin = {
                 "4.20.1" = "";
                 "4.21.0" = "";
                 "4.22.0" = "";
+                "4.27.0" = "";
               };
               x86_64-linux = {
                 "4.20.1" = "";
                 "4.21.0" = "";
                 "4.22.0" = "";
+                "4.27.0" = "";
               };
             };
             lean = toolchain leanVersion;
@@ -309,8 +322,10 @@
           lean-toolchain-4_20 = toolchain "4.20.1";
           lean-toolchain-4_21 = toolchain "4.21.0";
           lean-toolchain-4_22 = toolchain "4.22.0";
+          lean-toolchain-4_27 = toolchain "4.27.0";
           default = toolchain "4.22.0";
           mathlib-4_20 = mathlib "4.20.1";
+          mathlib-4_27 = mathlib "4.27.0";
           inherit test test2 gitRecording gitReplaying;
         };
         lib = {
@@ -320,6 +335,7 @@
           lean-4_20 = leanDevShell "4.20.1";
           lean-4_21 = leanDevShell "4.21.0";
           lean-4_22 = leanDevShell "4.22.0";
+          lean-4_27 = leanDevShell "4.27.0";
           default = leanDevShell "4.22.0";
         };
       }
