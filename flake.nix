@@ -319,7 +319,7 @@
           inherit test test2 gitRecording gitReplaying;
         };
         lib = {
-          inherit buildLeanPackage mathlib;
+          inherit buildLeanPackage mathlib gitRecording gitReplaying;
         };
         devShells = {
           lean-4_20 = leanDevShell "4.20.1";
