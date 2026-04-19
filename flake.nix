@@ -169,30 +169,13 @@
         };
         mathlib = leanVersion:
           let
-            versions = {
-              "4.20.1" = {
-                cliVersion = "4.20.0";
-                checkdeclsVersion = "lean4.18.0";
-                lean4checkerVersion = "4.20.1";
-              };
-              "4.27.0" = {
-                cliVersion = "4.27.0";
-                checkdeclsVersion = "lean4.18.0";
-                lean4checkerVersion = "4.27.0";
-              };
-              "4.28.0" = {
-                cliVersion = "4.28.0";
-                checkdeclsVersion = "lean4.18.0";
-                lean4checkerVersion = "4.28.0";
-              };
-            };
             hashes = {
               aarch64-darwin = {
-                "4.20.1" = "sha256-2zIdNVoP/gL0tjpsytumZH8nPCBBVlrF7GDGLcW8+Xs=";
+                "4.20.1" = "";
                 "4.21.0" = "";
                 "4.22.0" = "";
-                "4.27.0" = "sha256-09Bt8QRsVEKxcOUnJZpe1kZ4ux2m1g0ydVVrGxl+OQY=";
-                "4.28.0" = "sha256-QkpNxQfwIXJl7fUI1tZBwhPq+MvRBEIze4cYPT/yrWU=";
+                "4.27.0" = "";
+                "4.28.0" = "sha256-AOBMpqOpHlWrqlJ4F0bz/GXVA3uMV6UgnDwoEWKYOwE=";
               };
               aarch64-linux = {
                 "4.20.1" = "";
@@ -217,9 +200,6 @@
               };
             };
             lean = toolchain leanVersion;
-            cliVersion = versions.${leanVersion}.cliVersion;
-            checkdeclsVersion = versions.${leanVersion}.checkdeclsVersion;
-            lean4checkerVersion = versions.${leanVersion}.lean4checkerVersion;
           in
           pkgs.stdenv.mkDerivation {
             name = "mathlib-${leanVersion}";
@@ -245,22 +225,17 @@
             phases = [ "unpackPhase" "buildPhase" ];
             buildPhase = ''
               substituteInPlace lakefile.toml lean-toolchain \
-                --subst-var-by leanVersion "${leanVersion}" \
-                --subst-var-by cliVersion "${cliVersion}" \
-                --subst-var-by checkdeclsVersion "${checkdeclsVersion}" \
-                --subst-var-by lean4checkerVersion "${lean4checkerVersion}"
+                --subst-var-by leanVersion "${leanVersion}"
               mkdir -p $out
               export HOME=$(mktemp -d)
               export GITLOG=$(pwd)/gitlog
               export GITBASE=$(pwd)
               lake exe cache get
               lake build
-              lake build lean4checker
               for f in $(find .lake/packages -name .git -type d); do
                 rm -rf $f
                 mkdir -p $f
               done
-              rm -rf .lake/packages/mathlib/.lake/build/bin
               echo "----- Cleaning up traces"
               for f in $(find .lake/packages -path "*.lake*.trace" -type f); do
                 jq '.log[]?.message = ""' "$f" | sponge "$f"
@@ -351,6 +326,7 @@
           lean-4_21 = leanDevShell "4.21.0";
           lean-4_22 = leanDevShell "4.22.0";
           lean-4_27 = leanDevShell "4.27.0";
+          lean-4_28 = leanDevShell "4.28.0";
           default = leanDevShell "4.22.0";
         };
       }
