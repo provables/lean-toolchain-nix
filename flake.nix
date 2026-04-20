@@ -347,16 +347,15 @@
                 gnutar
                 rsync
               ]);
-              phases = [ "unpackPhase" "buildPhase" ];
               buildPhase = (if deps != null then ''
                 export GITLOG=${deps}/.gitlog
                 export GITBASE=$(pwd)
                 tar zxf ${deps}/packages.tgz
               '' else "") + ''
-                mkdir -p $out
+                mkdir -p $out/lib
                 export HOME=$(mktemp -d)
                 ${buildPhase}
-                rsync -a .lake/ $out
+                rsync -a .lake/ $out/lib
               '';
             });
 
