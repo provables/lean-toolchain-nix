@@ -4,7 +4,7 @@
     flake-utils.url = "github:numtide/flake-utils";
     shell-utils.url = "github:waltermoreira/shell-utils";
   };
-  outputs = { self, nixpkgs, flake-utils, shell-utils }:
+  outputs = { nixpkgs, flake-utils, shell-utils, ... }:
     flake-utils.lib.eachDefaultSystem
       (system:
         let
@@ -349,12 +349,12 @@
               ]);
               phases = [ "unpackPhase" "buildPhase" ];
               buildPhase = (if deps != null then ''
-                mkdir -p $out
-                export HOME=$(mktemp -d)
                 export GITLOG=${deps}/.gitlog
                 export GITBASE=$(pwd)
                 tar zxf ${deps}/packages.tgz
               '' else "") + ''
+                mkdir -p $out
+                export HOME=$(mktemp -d)
                 ${buildPhase}
                 rsync -a .lake/ $out
               '';
@@ -432,8 +432,8 @@
             inherit test test2 gitRecording gitReplaying test3 test3Deps;
           };
           lib = {
-            inherit buildLeanPackage mathlib gitRecording gitReplaying buildLeanDeps;
-            inherit buildLeanPackageFromDeps;
+            inherit buildLeanPackage mathlib gitRecording gitReplaying;
+            inherit buildLeanDeps buildLeanPackageFromDeps;
           };
           devShells = {
             lean-4_20 = leanDevShell "4.20.1";
