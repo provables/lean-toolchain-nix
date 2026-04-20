@@ -313,12 +313,13 @@
                     rm -rf $f
                     mkdir -p $f
                 done
+                cp -r $GITLOG $out/.gitlog
+                cp lakefile.toml $out/
+                cd .lake
                 GZIP=-n tar --sort=name \
                     --mtime="UTC 1970-01-01" \
                     --owner=0 --group=0 --numeric-owner --format=gnu \
-                    -zcf $out/packages.tgz .lake/packages
-                cp -r $GITLOG $out/.gitlog
-                cp lakefile.toml $out/
+                    -zcf $out/lake.tgz .
               '';
             });
 
@@ -347,10 +348,12 @@
                 gnutar
                 rsync
               ]);
-              buildPhase = (if deps != null then ''
+              buildPhase = ''
+                mkdir -p .lake
+              '' + (if deps != null then ''
                 export GITLOG=${deps}/.gitlog
                 export GITBASE=$(pwd)
-                tar zxf ${deps}/packages.tgz
+                tar zxf ${deps}/lake.tgz -C .lake
               '' else "") + ''
                 mkdir -p $out/lib
                 export HOME=$(mktemp -d)
@@ -400,7 +403,7 @@
             name = "test3Deps";
             src = ./test/foo;
             leanVersion = "4.27.0";
-            outputHash = "sha256-0XjzC5vf+5u9FRwzuLyC7UY7l9SwkzwfiHXVkywHBzs=";
+            outputHash = "sha256-41HMq1bRTwnbucaFmUVA4GYngShjUPkvBVtyXmAnPZo=";
             buildPhase = ''
               lake exe cache get
               lake build
