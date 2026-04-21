@@ -310,9 +310,7 @@
                 export GITBASE=$(pwd)
                 ${buildPhase}
                 rm -rf .lake/build
-                rm -rf .lake/packages/mathlib/.lake/build/bin/cache
-                find .lake -name \*.trace -delete
-                find .lake -name \*.hash -delete
+                rm -rf .lake/packages/mathlib/.lake/build/bin
                 for f in $(find .lake/packages -name .git -type d); do
                     rm -rf $f
                     mkdir -p $f
