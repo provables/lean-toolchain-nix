@@ -309,6 +309,7 @@
                 export GITLOG=$(pwd)/gitlog
                 export GITBASE=$(pwd)
                 ${buildPhase}
+                rm -rf .lake/build
                 for f in $(find .lake/packages -name .git -type d); do
                     rm -rf $f
                     mkdir -p $f
@@ -403,7 +404,7 @@
             name = "test3Deps";
             src = ./test/foo;
             leanVersion = "4.27.0";
-            outputHash = "sha256-41HMq1bRTwnbucaFmUVA4GYngShjUPkvBVtyXmAnPZo=";
+            outputHash = "sha256-xi3Xe+DVBOE6mU2ebB1Tb0a8oAtoJUyS7Rz/OZJs9Nc=";
             buildPhase = ''
               lake exe cache get
               lake build
