@@ -310,6 +310,9 @@
                 export GITBASE=$(pwd)
                 ${buildPhase}
                 rm -rf .lake/build
+                rm -rf .lake/packages/mathlib/.lake/build/bin/cache
+                find .lake -name \*.trace -delete
+                find .lake -name \*.hash -delete
                 for f in $(find .lake/packages -name .git -type d); do
                     rm -rf $f
                     mkdir -p $f
@@ -404,7 +407,7 @@
             name = "test3Deps";
             src = ./test/foo;
             leanVersion = "4.27.0";
-            outputHash = "sha256-xi3Xe+DVBOE6mU2ebB1Tb0a8oAtoJUyS7Rz/OZJs9Nc=";
+            outputHash = "sha256-9CMuFVdIhJcs37ZHOvv7QjRB8Eq04es5CsQlBDPkVNU=";
             buildPhase = ''
               lake exe cache get
               lake build
@@ -416,6 +419,7 @@
             src = ./test/foo;
             leanVersion = "4.27.0";
             deps = test3Deps;
+            phases = [ "unpackPhase" "buildPhase" ];
             buildPhase = ''
               lake build
             '';
