@@ -45,7 +45,7 @@
                   "4.22.0" = "";
                   "4.27.0" = "sha256-nomhQPe/11wkJpAeVcR34qZcDuGTOwBPzOQ/tBSTki8=";
                   "4.28.0" = "sha256-lOeK2sHFpa13iTW64NnI98FGCT0QtmkWZPy/V9zDWAE=";
-                  "4.30.0-rc2" = "";
+                  "4.30.0-rc2" = "sha256-SEoaAd80C+hq3frXjUeiOkpcXWfcG1f4ZffuRItWJYo=";
                 };
               };
               toolchainDownload =
