@@ -21,6 +21,7 @@
                   "4.22.0" = "sha256-9YL5VKjMfK3kpGiMPlYPjdx+Rm3hr62q4lEgDaxdwaM=";
                   "4.27.0" = "sha256-6asv9emVklmz0xD6zy3NKF+l6PPRDMnnHxcs247Zdng=";
                   "4.28.0" = "sha256-YTtB63IbVTA9i9FbmKXdc6kBAspF6D9H9xWpK+lWZAc=";
+                  "4.30.0-rc2" = "";
                 };
                 aarch64-linux = {
                   "4.20.1" = "sha256-PgvfYGmO+nWqwAWNcipxtGCXX08gGI3eSfEsBcZJWCg=";
@@ -28,6 +29,7 @@
                   "4.22.0" = "sha256-6YRd5hY5lafGrPGZx2oZSWhSJHSxWzBvJoBwmyTyL9M=";
                   "4.27.0" = "";
                   "4.28.0" = "";
+                  "4.30.0-rc2" = "";
                 };
                 x86_64-darwin = {
                   "4.20.1" = "sha256-Qlk1qljI2QVnbYCFVtV7DQf0oGCuzkdboKMJegOWRtA=";
@@ -35,6 +37,7 @@
                   "4.22.0" = "";
                   "4.27.0" = "";
                   "4.28.0" = "";
+                  "4.30.0-rc2" = "";
                 };
                 x86_64-linux = {
                   "4.20.1" = "sha256-EDlz49ECpEAYHdkihEOa5hVU27lP9g4vyNN7bfixHXw=";
@@ -42,6 +45,7 @@
                   "4.22.0" = "";
                   "4.27.0" = "sha256-nomhQPe/11wkJpAeVcR34qZcDuGTOwBPzOQ/tBSTki8=";
                   "4.28.0" = "sha256-lOeK2sHFpa13iTW64NnI98FGCT0QtmkWZPy/V9zDWAE=";
+                  "4.30.0-rc2" = "";
                 };
               };
               toolchainDownload =
@@ -430,6 +434,7 @@
             lean-toolchain-4_22 = toolchain "4.22.0";
             lean-toolchain-4_27 = toolchain "4.27.0";
             lean-toolchain-4_28 = toolchain "4.28.0";
+            lean-toolchain-4_30 = toolchain "4.30.0-rc2";
             default = toolchain "4.22.0";
             mathlib-4_20 = mathlib "4.20.1";
             mathlib-4_27 = mathlib "4.27.0";
@@ -446,6 +451,7 @@
             lean-4_22 = leanDevShell "4.22.0";
             lean-4_27 = leanDevShell "4.27.0";
             lean-4_28 = leanDevShell "4.28.0";
+            lean-4_30 = leanDevShell "4.30.0-rc2";
             default = leanDevShell "4.22.0";
           };
         }
