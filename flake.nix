@@ -21,7 +21,7 @@
         in
         {
           lib = {
-            inherit buildLean;
+            inherit buildLean toolchain;
           };
           packages = {
             lean-toolchain-4_28 = toolchain "4.28.0";
