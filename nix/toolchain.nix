@@ -25,13 +25,15 @@ let
       dontPatchShebangs = true;
       buildPhase = ''
         export HOME=$(mktemp -d)
+        echo "HOME: $HOME"
+        export ELAN_HOME=$(mktemp -d)
+        echo "ELAN_HOME: $ELAN_HOME"
         mkdir -p $out
+
         curl https://elan.lean-lang.org/elan-init.sh -sSf > install-lean
         chmod +x install-lean
         ./install-lean -y
-        source $HOME/.elan/env
-
-        export ELAN_HOME=$(mktemp -d)
+        source $ELAN_HOME/env
 
         elan toolchain install ${leanVersion}
         cd $ELAN_HOME/toolchains
@@ -39,6 +41,7 @@ let
           --mtime="UTC 1970-01-01" \
           --owner=0 --group=0 --numeric-owner --format=gnu \
           -zcf $out/toolchain.tgz .
+        echo "Finished gzip"
       '';
       phases = [ "buildPhase" ];
     };
@@ -57,7 +60,10 @@ stdenv.mkDerivation {
   buildPhase = ''
     mkdir -p $out
     cd $out
+    echo "about to untar from ${toolchainDownload}"
     tar zxf ${toolchainDownload}/toolchain.tgz
+    echo "untarred"
     ln -s leanprover--lean4---v${leanVersion}/* .
+    echo "linked"
   '';
 }
