@@ -5,9 +5,10 @@ let
     stdenv.mkDerivation {
       name = "toolchain-${leanVersion}-download";
       buildInputs = with pkgs; [
-        elan
         coreutils
         gnutar
+        git
+        curl
       ];
       nativeBuildInputs = with pkgs; [
         cacert
@@ -23,17 +24,21 @@ let
       dontFixup = true;
       dontPatchShebangs = true;
       buildPhase = ''
-        mkdir -p $out/elan
-        export ELAN_HOME=$out/elan
         export HOME=$(mktemp -d)
+        mkdir -p $out
+        curl https://elan.lean-lang.org/elan-init.sh -sSf > install-lean
+        chmod +x install-lean
+        ./install-lean -y
+        source $HOME/.elan/env
+
+        export ELAN_HOME=$(mktemp -d)
+
         elan toolchain install ${leanVersion}
-        rm -rf $out/elan/{tmp,known-projects}
-        cd $out/elan/toolchains
+        cd $ELAN_HOME/toolchains
         GZIP=-n tar --sort=name \
           --mtime="UTC 1970-01-01" \
           --owner=0 --group=0 --numeric-owner --format=gnu \
           -zcf $out/toolchain.tgz .
-        rm -rf $out/elan
       '';
       phases = [ "buildPhase" ];
     };
