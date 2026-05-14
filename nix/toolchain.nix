@@ -69,7 +69,7 @@ stdenv.mkDerivation {
   '';
   doDist = true;
   distPhase = ''
-    for f in `find $out/bin/`; do
+    for f in `find $out/bin/ -type f`; do
       patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$f" || true
     done
     # for f in `find $out/lib/lean/ -name \*.so`; do

@@ -41,6 +41,7 @@
         name = "${name}-src";
         filter = path: type: baseNameOf path != ".lake";
       };
+      LEAN_CC = "${pkgs.gcc}/bin/cc";
       buildPhase = ''
         mkdir -p $out
         export HOME=$(mktemp -d)
@@ -88,6 +89,7 @@
         gnutar
         rsync
       ]);
+      LEAN_CC = "${pkgs.gcc}/bin/cc";
       buildPhase = ''
         mkdir -p .lake
       '' + (if deps != null then ''
