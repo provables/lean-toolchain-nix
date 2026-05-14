@@ -1,4 +1,4 @@
-{ stdenv, pkgs, hashes, ... }:
+{ lib, stdenv, pkgs, hashes, ... }:
 leanVersion:
 let
   toolchainDownload =
@@ -45,12 +45,13 @@ let
       '';
       phases = [ "buildPhase" ];
     };
+  libPath = lib.makeLibraryPath [ stdenv.cc.cc.lib pkgs.glibc pkgs.libllvm pkgs.zlib pkgs.libunwind ];
 in
 stdenv.mkDerivation {
   name = "toolchain-${leanVersion}";
   buildInputs = with pkgs; [
-    elan
     toolchainDownload
+    findutils
   ];
   src = builtins.path {
     path = ./.;
@@ -65,5 +66,15 @@ stdenv.mkDerivation {
     echo "untarred"
     ln -s leanprover--lean4---v${leanVersion}/* .
     echo "linked"
+  '';
+  doDist = true;
+  distPhase = ''
+    for f in `find $out/bin/`; do
+      patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$f" || true
+    done
+    # for f in `find $out/lib/lean/ -name \*.so`; do
+    #   patchelf --set-rpath "${libPath}:\$ORIGIN/..:\$ORIGIN" "$f" || true
+    #   patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$f" || true
+    # done
   '';
 }
