@@ -1,4 +1,4 @@
-{ lib, stdenv, pkgs, hashes, ... }:
+{ lib, stdenv, makeWrapper, pkgs, hashes, ... }:
 leanVersion:
 let
   toolchainDownload =
@@ -50,6 +50,7 @@ in
 stdenv.mkDerivation {
   name = "toolchain-${leanVersion}";
   buildInputs = with pkgs; [
+    makeWrapper
     toolchainDownload
     findutils
   ];
@@ -71,7 +72,17 @@ stdenv.mkDerivation {
   distPhase = ''
     for f in `find $out/bin/ -type f`; do
       patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$f" || true
+      # wrapProgram "$f" --set LEAN_CC "${pkgs.gcc}/bin/cc"
     done
+    ln -s ${pkgs.gcc}/bin/cc $out/bin/cc
+    wrapProgram $out/bin/cc --add-flags \
+      "--sysroot $out -L $out/lib -L $out/lib/glibc \
+      -lc -lc_nonshared -Wl,--as-needed -l:ld.so -Wl,--no-as-needed \
+      -lpthread_nonshared -Wl,--as-needed -Wl,-Bstatic -lgmp -lunwind -luv \
+      -Wl,-Bdynamic -Wl,--no-as-needed -fuse-ld=lld"
+
+    # TODO: wrap bins with LEAN_CC=glibc
+    # TODO: also try to add -L=.. to LEAN_CC
     # for f in `find $out/lib/lean/ -name \*.so`; do
     #   patchelf --set-rpath "${libPath}:\$ORIGIN/..:\$ORIGIN" "$f" || true
     #   patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$f" || true

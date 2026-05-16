@@ -18,6 +18,26 @@
             inherit (inputs'.shell-utils.lib) shell;
             inherit toolchain;
           };
+          u = buildLean.deps {
+            name = "u";
+            leanVersion = "4.28.0";
+            src = ./foo;
+            outputHash = "";
+            buildInputs = [ pkgs.bintools pkgs.gnugrep ];
+            buildPhase = ''
+              export LEAN_CC=${pkgs.gcc}/bin/cc
+              echo "LEAN_CC is --$LEAN_CC--"
+              lake -v exe cache get || true
+              ls -l .lake/packages/mathlib/.lake/build/bin/cache
+              ldd .lake/packages/mathlib/.lake/build/bin/cache
+              readelf -a .lake/packages/mathlib/.lake/build/bin/cache | grep 'program interpreter'
+              lake env
+              #unset LEAN_CC
+              echo "LEAN_CC is --$LEAN_CC--"
+              lake -v build UnicodeBasic
+              nm -D .lake/packages/UnicodeBasic/.lake/build/lib/lean/UnicodeBasic_UnicodeBasic_TableLookup.so|grep unicode_case_lookup
+            '';
+          };
         in
         {
           lib = {
@@ -25,6 +45,7 @@
           };
           packages = {
             lean-toolchain-4_28 = toolchain "4.28.0";
+            inherit u;
           };
           devShells = {
             lean-4_28 = leanDevShell "4.28.0";
