@@ -62,17 +62,13 @@ stdenv.mkDerivation {
   buildPhase = ''
     mkdir -p $out
     cd $out
-    echo "about to untar from ${toolchainDownload}"
     tar zxf ${toolchainDownload}/toolchain.tgz
-    echo "untarred"
     ln -s leanprover--lean4---v${leanVersion}/* .
-    echo "linked"
   '';
   doDist = true;
   distPhase = ''
     for f in `find $out/bin/ -type f`; do
       patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$f" || true
-      # wrapProgram "$f" --set LEAN_CC "${pkgs.gcc}/bin/cc"
     done
     ln -s ${pkgs.gcc}/bin/cc $out/bin/cc
     wrapProgram $out/bin/cc --add-flags \
@@ -80,12 +76,5 @@ stdenv.mkDerivation {
       -lc -lc_nonshared -Wl,--as-needed -l:ld.so -Wl,--no-as-needed \
       -lpthread_nonshared -Wl,--as-needed -Wl,-Bstatic -lgmp -lunwind -luv \
       -Wl,-Bdynamic -Wl,--no-as-needed -fuse-ld=lld"
-
-    # TODO: wrap bins with LEAN_CC=glibc
-    # TODO: also try to add -L=.. to LEAN_CC
-    # for f in `find $out/lib/lean/ -name \*.so`; do
-    #   patchelf --set-rpath "${libPath}:\$ORIGIN/..:\$ORIGIN" "$f" || true
-    #   patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$f" || true
-    # done
   '';
 }
