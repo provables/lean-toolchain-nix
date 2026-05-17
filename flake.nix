@@ -22,20 +22,11 @@
             name = "u";
             leanVersion = "4.28.0";
             src = ./foo;
-            outputHash = "";
+            outputHash = "sha256-uKu2qJb3PBolc29a/vEA9FbjBRA3Bsg+m6tdWZ3HvE8=";
             buildInputs = [ pkgs.bintools pkgs.gnugrep ];
             buildPhase = ''
-              export LEAN_CC=${pkgs.gcc}/bin/cc
-              echo "LEAN_CC is --$LEAN_CC--"
               lake -v exe cache get || true
-              ls -l .lake/packages/mathlib/.lake/build/bin/cache
-              ldd .lake/packages/mathlib/.lake/build/bin/cache
-              readelf -a .lake/packages/mathlib/.lake/build/bin/cache | grep 'program interpreter'
-              lake env
-              #unset LEAN_CC
-              echo "LEAN_CC is --$LEAN_CC--"
               lake -v build UnicodeBasic
-              nm -D .lake/packages/UnicodeBasic/.lake/build/lib/lean/UnicodeBasic_UnicodeBasic_TableLookup.so|grep unicode_case_lookup
             '';
           };
         in
