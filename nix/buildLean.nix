@@ -4,6 +4,7 @@
 , cacert
 , gitPlay
 , toolchain
+, distPhase ? ""
 , ...
 }:
 
@@ -77,7 +78,7 @@
       _lean = toolchain leanVersion;
     in
     stdenv.mkDerivation (params // {
-      inherit name;
+      inherit name distPhase;
       src = builtins.path {
         path = src;
         name = "${name}-src";
@@ -100,7 +101,7 @@
         mkdir -p $out/lib
         export HOME=$(mktemp -d)
         ${buildPhase}
-        rsync -a .lake/ $out/lib
       '';
+      doDist = true;
     });
 }
