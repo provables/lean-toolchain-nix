@@ -4,7 +4,6 @@
 , cacert
 , gitPlay
 , toolchain
-, distPhase ? ""
 , ...
 }:
 
@@ -72,6 +71,7 @@
     , leanVersion ? "4.28.0"
     , buildInputs ? [ ]
     , buildPhase ? ""
+    , distPhase ? "true"
     , ...
     }@params:
     let
