@@ -25,9 +25,7 @@ let
       dontPatchShebangs = true;
       buildPhase = ''
         export HOME=$(mktemp -d)
-        echo "HOME: $HOME"
         export ELAN_HOME=$(mktemp -d)
-        echo "ELAN_HOME: $ELAN_HOME"
         mkdir -p $out
 
         curl https://elan.lean-lang.org/elan-init.sh -sSf > install-lean

@@ -71,7 +71,7 @@
     , leanVersion ? "4.28.0"
     , buildInputs ? [ ]
     , buildPhase ? ""
-    , distPhase ? "true"
+    , distPhase ? ""
     , ...
     }@params:
     let
@@ -102,6 +102,6 @@
         export HOME=$(mktemp -d)
         ${buildPhase}
       '';
-      doDist = true;
+      doDist = distPhase != "";
     });
 }
