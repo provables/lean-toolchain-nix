@@ -18,17 +18,6 @@
             inherit (inputs'.shell-utils.lib) shell;
             inherit toolchain;
           };
-          u = buildLean.deps {
-            name = "u";
-            leanVersion = "4.28.0";
-            src = ./foo;
-            outputHash = "sha256-uKu2qJb3PBolc29a/vEA9FbjBRA3Bsg+m6tdWZ3HvE8=";
-            buildInputs = [ pkgs.bintools pkgs.gnugrep ];
-            buildPhase = ''
-              lake -v exe cache get || true
-              lake -v build UnicodeBasic
-            '';
-          };
         in
         {
           lib = {
@@ -36,7 +25,6 @@
           };
           packages = {
             lean-toolchain-4_28 = toolchain "4.28.0";
-            inherit u;
           };
           devShells = {
             lean-4_28 = leanDevShell "4.28.0";
