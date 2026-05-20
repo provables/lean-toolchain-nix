@@ -4,7 +4,7 @@
     "4.21.0" = "sha256-clPmvzmNchv3wODsTVCzgHmO7LBEXMctWc7cwGbo7Z0=";
     "4.22.0" = "sha256-9YL5VKjMfK3kpGiMPlYPjdx+Rm3hr62q4lEgDaxdwaM=";
     "4.27.0" = "sha256-6asv9emVklmz0xD6zy3NKF+l6PPRDMnnHxcs247Zdng=";
-    "4.28.0" = "sha256-YTtB63IbVTA9i9FbmKXdc6kBAspF6D9H9xWpK+lWZAc=";
+    "4.28.0" = "";
     "4.30.0-rc2" = "sha256-0wKfQKe1oaLTJ+hZyKabJinylhofyzhLObZcvSpUdjU=";
   };
   aarch64-linux = {
