@@ -43,7 +43,6 @@ let
       '';
       phases = [ "buildPhase" ];
     };
-  libPath = lib.makeLibraryPath [ stdenv.cc.cc.lib pkgs.glibc pkgs.libllvm pkgs.zlib pkgs.libunwind ];
 in
 stdenv.mkDerivation {
   name = "toolchain-${leanVersion}";
@@ -65,6 +64,7 @@ stdenv.mkDerivation {
   '';
   doDist = true;
   distPhase = ''
+    # For linux do this, for mac don't do anything here
     for f in `find $out/bin/ -type f`; do
       echo "LD is $(cat $NIX_CC/nix-support/dynamic-linker)"
       patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$f" || true

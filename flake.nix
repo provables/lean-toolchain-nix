@@ -23,21 +23,11 @@
             leanVersion = "4.28.0";
             src = ./foo;
             outputHash = "";
-            buildInputs = [ pkgs.bintools pkgs.gnugrep pkgs.strace pkgs.which ];
+            buildInputs = [ pkgs.bintools pkgs.gnugrep pkgs.which ];
             buildPhase = ''
-              #export LEAN_CC=${pkgs.gcc}/bin/cc
               echo "LEAN_CC is --$LEAN_CC--"
-              ldd `which lake`
               lake -v exe cache get 
-              readelf -a .lake/packages/mathlib/.lake/build/bin/cache > .read
-              strace -feexecve .lake/packages/mathlib/.lake/build/bin/cache
-              ls -l .lake/packages/mathlib/.lake/build/bin/cache
-              ldd .lake/packages/mathlib/.lake/build/bin/cache
-              lake env
-              #unset LEAN_CC
-              echo "LEAN_CC is --$LEAN_CC--"
               lake -v build UnicodeBasic
-              nm -D .lake/packages/UnicodeBasic/.lake/build/lib/lean/UnicodeBasic_UnicodeBasic_TableLookup.so|grep unicode_case_lookup
             '';
           };
         in
