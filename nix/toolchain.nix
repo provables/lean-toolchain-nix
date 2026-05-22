@@ -62,20 +62,12 @@ stdenv.mkDerivation {
     tar zxf ${toolchainDownload}/toolchain.tgz
     ln -s leanprover--lean4---v${leanVersion}/* .
   '';
-  doDist = true;
-  distPhase = ''
-    # For linux do this, for mac don't do anything here
+  doDist = stdenv.isLinux;
+  distPhase = lib.optionalString stdenv.isLinux ''
     for f in `find $out/bin/ -type f`; do
-      echo "LD is $(cat $NIX_CC/nix-support/dynamic-linker)"
       patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$f" || true
     done
     wrapProgram $out/bin/clang \
       --append-flags "-Wl,-dynamic-linker=$(cat $NIX_CC/nix-support/dynamic-linker)"
-    # ln -s ${pkgs.gcc}/bin/cc $out/bin/cc
-    # wrapProgram $out/bin/cc --add-flags \
-    #   "--sysroot $out -L $out/lib -L $out/lib/glibc \
-    #   -lc -lc_nonshared -Wl,--as-needed -l:ld.so -Wl,--no-as-needed \
-    #   -lpthread_nonshared -Wl,--as-needed -Wl,-Bstatic -lgmp -lunwind -luv \
-    #   -Wl,-Bdynamic -Wl,--no-as-needed -fuse-ld=lld"
   '';
 }

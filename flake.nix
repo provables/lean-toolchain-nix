@@ -22,7 +22,7 @@
             name = "u";
             leanVersion = "4.28.0";
             src = ./foo;
-            outputHash = "";
+            outputHash = "sha256-VadVP7vmCl6HOLWltNlE06jp6YeG16By8cPqn/dJ3Ug=";
             buildInputs = [ pkgs.bintools pkgs.gnugrep pkgs.which ];
             buildPhase = ''
               echo "LEAN_CC is --$LEAN_CC--"
