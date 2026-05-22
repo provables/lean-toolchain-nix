@@ -96,7 +96,7 @@
         export GITBASE=$(pwd)
         tar zxf ${deps}/lake.tgz -C .lake
       '' else "") + ''
-        mkdir -p $out/lib
+        mkdir -p $out
         export HOME=$(mktemp -d)
         ${buildPhase}
       '';
