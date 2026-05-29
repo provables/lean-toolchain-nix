@@ -37,6 +37,7 @@
           };
           packages = {
             lean-toolchain-4_28 = toolchain "4.28.0";
+            lean-toolchain-4_30 = toolchain "4.30.0";
             inherit u;
           };
           devShells = {
