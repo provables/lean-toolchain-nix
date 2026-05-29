@@ -42,6 +42,7 @@
           };
           devShells = {
             lean-4_28 = leanDevShell "4.28.0";
+            lean-4_30 = leanDevShell "4.30.0";
           };
         };
     };

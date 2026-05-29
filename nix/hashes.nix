@@ -6,7 +6,7 @@
     "4.27.0" = "";
     "4.28.0" = "sha256-YTtB63IbVTA9i9FbmKXdc6kBAspF6D9H9xWpK+lWZAc=";
     "4.30.0-rc2" = "";
-    "4.30.0" = "";
+    "4.30.0" = "sha256-fwe9slLpItkYfUSa/oRN6DGynwmX4iivv0FzEzJJiLs=";
   };
   aarch64-linux = {
     "4.20.1" = "";
